@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const walletSchema = new Schema(
+const userSchema = new Schema(
     {
         userId: {
             type: Schema.Types.ObjectId,
@@ -17,4 +17,4 @@ const walletSchema = new Schema(
     { timestamps: true }
 );
 
-export const Wallet = mongoose.model("Wallet", walletSchema);
+export const User = mongoose.model("User", userSchema);
