@@ -18,6 +18,7 @@ const BookingPage = () => {
     const [walletBalance, setWalletBalance] = useState(0);
     const [loading, setLoading] = useState(false);
     const [confirming, setConfirming] = useState(false);
+    const [confirmedBooking, setConfirmedBooking] = useState(null);
 
     useEffect(() => {
         if (!flight) {
@@ -81,10 +82,8 @@ const BookingPage = () => {
                 passengerName,
             });
 
-            toast.success(
-                `Booking confirmed! PNR: ${response.data.booking.pnr}`
-            );
-            navigate("/booking-history");
+            setConfirmedBooking(response.data);
+            toast.success(`Booking confirmed! PNR: ${response.data.PNR}`);
         } catch (error) {
             toast.error(error.message || "Failed to confirm booking");
         } finally {
@@ -107,6 +106,231 @@ const BookingPage = () => {
 
     if (!bookingPreview) {
         return null;
+    }
+
+    // Show ticket card after successful booking
+    if (confirmedBooking) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 py-8 px-4">
+                <div className="max-w-3xl mx-auto">
+                    <div className="text-center mb-6">
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500 rounded-full mb-4">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={3}
+                                stroke="currentColor"
+                                className="w-12 h-12 text-white"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M4.5 12.75l6 6 9-13.5"
+                                />
+                            </svg>
+                        </div>
+                        <h1 className="text-4xl font-bold text-gray-800 mb-2">
+                            Booking Confirmed!
+                        </h1>
+                        <p className="text-gray-600">
+                            Your ticket has been successfully booked
+                        </p>
+                    </div>
+
+                    <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-2 border-green-200">
+                        <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-8 py-6">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <p className="text-green-100 text-sm mb-1">
+                                        E-Ticket
+                                    </p>
+                                    <h2 className="text-3xl font-bold text-white">
+                                        Flight Ticket
+                                    </h2>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-green-100 text-sm mb-1">
+                                        PNR
+                                    </p>
+                                    <p className="text-2xl font-bold text-white tracking-wider">
+                                        {confirmedBooking.PNR}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-8">
+                            <div className="grid md:grid-cols-2 gap-8 mb-8">
+                                <div className="space-y-6">
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-500 uppercase mb-2">
+                                            Passenger Name
+                                        </p>
+                                        <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-4">
+                                            <div className="bg-green-100 rounded-full p-3">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    strokeWidth={1.5}
+                                                    stroke="currentColor"
+                                                    className="w-6 h-6 text-green-600"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                                                    />
+                                                </svg>
+                                            </div>
+                                            <p className="text-xl font-bold text-gray-900">
+                                                {confirmedBooking.passengerName}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-500 uppercase mb-2">
+                                            Flight Details
+                                        </p>
+                                        <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-600">
+                                                    Airline
+                                                </span>
+                                                <span className="font-semibold text-gray-900">
+                                                    {flight.airline}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-600">
+                                                    Flight ID
+                                                </span>
+                                                <span className="font-semibold text-gray-900">
+                                                    {flight.flightId}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-500 uppercase mb-2">
+                                            Route
+                                        </p>
+                                        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-6">
+                                            <div className="flex items-center justify-between">
+                                                <div className="text-center">
+                                                    <p className="text-xs text-gray-500 mb-1">
+                                                        From
+                                                    </p>
+                                                    <p className="text-2xl font-bold text-gray-900">
+                                                        {flight.departureCity}
+                                                    </p>
+                                                </div>
+                                                <div className="flex-1 flex items-center justify-center px-4">
+                                                    <div className="w-full border-t-2 border-dashed border-gray-400"></div>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth={2}
+                                                        stroke="currentColor"
+                                                        className="w-8 h-8 text-green-600 mx-2"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+                                                        />
+                                                    </svg>
+                                                    <div className="w-full border-t-2 border-dashed border-gray-400"></div>
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className="text-xs text-gray-500 mb-1">
+                                                        To
+                                                    </p>
+                                                    <p className="text-2xl font-bold text-gray-900">
+                                                        {flight.arrivalCity}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-500 uppercase mb-2">
+                                            Payment Details
+                                        </p>
+                                        <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-600">
+                                                    Final Price
+                                                </span>
+                                                <span className="text-xl font-bold text-green-600">
+                                                    {formatPrice(
+                                                        confirmedBooking.amountPaid
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between pt-2 border-t border-gray-300">
+                                                <span className="text-gray-600">
+                                                    Booking Date
+                                                </span>
+                                                <span className="font-semibold text-gray-900">
+                                                    {formatTimeAndDate(
+                                                        confirmedBooking.createdAt
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="border-t border-gray-200 pt-6 space-y-3">
+                                <button
+                                    onClick={() => {
+                                        /* PDF download functionality - to be implemented */
+                                    }}
+                                    className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-lg transition flex items-center justify-center gap-3 text-lg"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2}
+                                        stroke="currentColor"
+                                        className="w-6 h-6"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+                                        />
+                                    </svg>
+                                    Download PDF Ticket
+                                </button>
+                                <button
+                                    onClick={() => navigate("/bookings")}
+                                    className="w-full bg-white border-2 border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-4 px-6 rounded-lg transition"
+                                >
+                                    View Booking History
+                                </button>
+                                <button
+                                    onClick={() => navigate("/flights")}
+                                    className="w-full bg-white border-2 border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-4 px-6 rounded-lg transition"
+                                >
+                                    Book Another Flight
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     const surgeApplied = bookingPreview.amountToBePaid > flight.basePrice;
